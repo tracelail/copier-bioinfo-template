@@ -9,7 +9,9 @@ pre-commit hooks, and optional trace-bioutils integration.
 ```zsh
 # Interactive — prompts for all answers
 copier copy --trust gh:tracelail/copier-bioinfo-template ./my-project
+```
 
+```zsh
 # Non-interactive — supply answers inline
 copier copy --trust \
   -d project_name=rna-seq-analysis \
@@ -18,7 +20,9 @@ copier copy --trust \
   -d author_email="your@email.com" \
   -d github_username=tracelail \
   gh:tracelail/copier-bioinfo-template ./rna-seq-analysis
+```
 
+```zsh
 # Without trace-bioutils
 copier copy --trust \
   -d use_trace_bioutils=false \
@@ -31,6 +35,12 @@ After generation, set up the project:
 cd my-project
 just setup       # installs environment + activates pre-commit hooks
 just check       # verify everything works
+```
+
+Now create the remote repo:
+
+```zsh
+gh repo create tracelail/my-real-project --public --source=. --remote=origin --push
 ```
 
 ## Template questions

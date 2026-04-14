@@ -38,12 +38,12 @@ description:
 author_name:
   type: str
   help: "Author full name"
-  default: "trace"
+  default: "Trace Lail"
 
 author_email:
   type: str
   help: "Author email address"
-  default: "your@email.com"
+  default: "lailtrace@gmail.com"
 
 github_username:
   type: str
