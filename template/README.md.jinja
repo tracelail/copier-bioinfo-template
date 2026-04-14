@@ -6,19 +6,29 @@
 
 {{ description }}
 
+## Requirements
+
+- [pixi](https://pixi.sh) — environment and dependency manager
+- [just](https://just.systems) — task runner
+
 ## Installation
 
-This project uses [pixi](https://pixi.sh) for environment management.
-
-```bash
+```zsh
 git clone https://github.com/{{ github_username }}/{{ project_name }}.git
 cd {{ project_name }}
 just setup
 ```
 
+`just setup` installs all dependencies (including bioconda packages) and
+activates git hooks. Run it once after cloning.
+
 ## Quick start
 
 ```python
+{% if use_trace_bioutils %}
+from trace_bioutils.fasta import read_fasta
+from trace_bioutils.sequence import filter_sequences
+{% endif %}
 from {{ package_name }} import analysis
 ```
 
@@ -26,8 +36,14 @@ from {{ package_name }} import analysis
 
 ```
 ├── data/                        # Raw, processed, and external data (not tracked)
+│   ├── raw/                     # Immutable input — never modify directly
+│   ├── processed/               # Generated from raw data
+│   └── external/                # Reference data (genomes, annotations)
 ├── notebooks/                   # Exploratory Jupyter notebooks
-├── results/                     # Figures, tables, and reports
+├── results/                     # Pipeline outputs
+│   ├── figures/
+│   ├── tables/
+│   └── reports/
 ├── src/{{ package_name }}/      # Importable Python package
 │   ├── analysis/
 │   ├── data/
@@ -35,27 +51,69 @@ from {{ package_name }} import analysis
 │   └── utils/
 ├── tests/                       # Test suite
 ├── config/                      # Configuration files
-├── pixi.toml                    # Dependency manifest
+├── pixi.toml                    # Dependency manifest (conda-forge + bioconda)
 ├── pyproject.toml               # Build, lint, type-check, and test config
 └── justfile                     # Task runner
 ```
 
-## Development
+## Development tasks
 
-```bash
-just test        # Run the test suite
-just lint        # Lint with ruff
-just format      # Format with ruff
-just typecheck   # Run mypy
-just check       # All of the above
-just notebook    # Start Jupyter Lab
-just clean       # Remove caches and build artifacts
+Run `just` with no arguments to list all available recipes.
+
+| Command | What it does |
+|---|---|
+| `just setup` | Install dependencies + activate pre-commit hooks (run once after cloning) |
+| `just test` | Run the test suite with pytest |
+| `just lint` | Lint code with ruff |
+| `just format` | Auto-format code with ruff |
+| `just typecheck` | Run mypy type checks |
+| `just check` | Run lint + typecheck + test in sequence |
+| `just notebook` | Start Jupyter Lab in notebooks/ |
+| `just clean` | Remove caches and build artifacts |
+
+## Updating dependencies
+
+Update all dependencies to their latest compatible versions:
+
+```zsh
+pixi update
 ```
+
+Update a specific package:
+
+```zsh
+pixi update numpy
+```
+{% if use_trace_bioutils %}
+Pull the latest changes from trace-bioutils:
+
+```zsh
+pixi update trace-bioutils
+```
+{% endif %}
+
+## Updating this project from the template
+
+This project was generated from
+[copier-bioinfo-template](https://github.com/tracelail/copier-bioinfo-template).
+When the template receives improvements, pull them into this project:
+
+```zsh
+# Preview what would change without applying
+copier update --trust --pretend
+
+# Apply the update
+copier update --trust
+```
+
+Copier performs a three-way merge. If there are conflicts, `.rej` files are
+created next to the conflicting files — resolve them manually, delete the
+`.rej` files, then commit.
 
 ## Data
 
 Raw data lives in `data/raw/` and is never modified directly.
-See `data/README.md` for instructions on obtaining the data.
+See `data/README.md` for instructions on obtaining the data for this project.
 
 ## Citation
 

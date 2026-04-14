@@ -1,26 +1,40 @@
 # justfile — task runner for {{ project_name }}
-# Run `just` to see all available recipes.
+# Run `just` with no arguments to list all available recipes.
+# Run `just <recipe>` to execute a recipe.
+#
+# First time setup:
+#   just setup
+#
+# Daily workflow:
+#   just check      ← run before every commit
+#   just test       ← run after adding new code
+#   just format     ← fix formatting automatically
 
 set quiet
 
-# List available recipes
+# List all available recipes
 default:
     @just --list
 
-# Install dependencies and activate pre-commit hooks
+# ── Setup ─────────────────────────────────────────────────────────────────────
+
+# Install all dependencies and activate pre-commit hooks (run once after cloning)
 setup:
     pixi install
     pixi run pre-commit install
+    @echo "✓ Environment ready. Run 'just check' to verify."
 
-# Run the test suite  (pass extra args: just test -k "test_foo")
+# ── Quality checks ────────────────────────────────────────────────────────────
+
+# Run the full test suite (pass extra args: just test -k "test_foo")
 test *ARGS:
     pixi run pytest tests/ -v {{ '{{ARGS}}' }}
 
-# Lint the codebase
+# Lint the codebase with ruff
 lint:
     pixi run ruff check src/ tests/
 
-# Format the codebase
+# Auto-format the codebase with ruff
 format:
     pixi run ruff format src/ tests/
 
@@ -28,15 +42,38 @@ format:
 typecheck:
     pixi run mypy src/
 
-# Run all quality checks
+# Run all quality checks in sequence (lint → typecheck → test)
 check: lint typecheck test
 
-# Remove caches and build artifacts
+# ── Utilities ─────────────────────────────────────────────────────────────────
+
+# Start Jupyter Lab in the notebooks directory
+notebook:
+    pixi run jupyter lab notebooks/
+
+# Remove all caches and build artifacts
 clean:
     rm -rf build/ dist/ .pytest_cache/ .ruff_cache/ .mypy_cache/ .coverage
     find . -type d -name __pycache__ -exec rm -rf {} +
     find . -type f -name "*.pyc" -delete
+    @echo "✓ Cleaned."
 
-# Start a Jupyter lab session
-notebook:
-    pixi run jupyter lab notebooks/
+# ── Dependency management ─────────────────────────────────────────────────────
+
+# Update all dependencies to latest compatible versions
+update:
+    pixi update
+
+# Update trace-bioutils to latest commit
+update-bioutils:
+    pixi update trace-bioutils
+
+# ── Template updates ──────────────────────────────────────────────────────────
+
+# Preview template updates without applying them
+template-preview:
+    copier update --trust --pretend
+
+# Pull latest improvements from the project template
+template-update:
+    copier update --trust
