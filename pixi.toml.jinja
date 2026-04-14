@@ -1,0 +1,48 @@
+[workspace]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = "{{ description }}"
+authors = ["{{ author_name }} <{{ author_email }}>"]
+channels = ["conda-forge", "bioconda"]
+platforms = ["linux-64", "osx-arm64"]
+
+# ── Conda dependencies ────────────────────────────────────────────────────────
+
+[dependencies]
+python = ">={{ python_version }},<3.14"
+numpy = ">=1.26"
+pandas = ">=2.2"
+biopython = ">=1.84"
+scipy = ">=1.13"
+matplotlib-base = ">=3.9"
+
+[feature.dev.dependencies]
+ruff = ">=0.15"
+mypy = ">=1.20"
+pytest = ">=9.0"
+pytest-cov = ">=6.0"
+pre-commit = ">=4.0"
+jupyter = ">=1.0"
+ipykernel = ">=6.29"
+
+# ── PyPI dependencies ─────────────────────────────────────────────────────────
+
+[pypi-dependencies]
+{{ project_name }} = { path = ".", editable = true }
+{% if use_trace_bioutils %}
+trace-bioutils = { git = "https://github.com/tracelail/trace-bioutils.git" }
+{% endif %}
+
+# ── Tasks ─────────────────────────────────────────────────────────────────────
+
+[tasks]
+test      = { cmd = "pytest tests/ -v",        description = "Run test suite" }
+lint      = { cmd = "ruff check src/ tests/",  description = "Lint with ruff" }
+format    = { cmd = "ruff format src/ tests/", description = "Format with ruff" }
+typecheck = { cmd = "mypy src/",               description = "Type check with mypy" }
+check     = { depends-on = ["lint", "typecheck", "test"], description = "Run all checks" }
+
+# ── Environments ──────────────────────────────────────────────────────────────
+
+[environments]
+default = { features = ["dev"], solve-group = "default" }

@@ -1,0 +1,42 @@
+# justfile — task runner for {{ project_name }}
+# Run `just` to see all available recipes.
+
+set quiet
+
+# List available recipes
+default:
+    @just --list
+
+# Install dependencies and activate pre-commit hooks
+setup:
+    pixi install
+    pixi run pre-commit install
+
+# Run the test suite  (pass extra args: just test -k "test_foo")
+test *ARGS:
+    pixi run pytest tests/ -v {{ '{{ARGS}}' }}
+
+# Lint the codebase
+lint:
+    pixi run ruff check src/ tests/
+
+# Format the codebase
+format:
+    pixi run ruff format src/ tests/
+
+# Run mypy type checks
+typecheck:
+    pixi run mypy src/
+
+# Run all quality checks
+check: lint typecheck test
+
+# Remove caches and build artifacts
+clean:
+    rm -rf build/ dist/ .pytest_cache/ .ruff_cache/ .mypy_cache/ .coverage
+    find . -type d -name __pycache__ -exec rm -rf {} +
+    find . -type f -name "*.pyc" -delete
+
+# Start a Jupyter lab session
+notebook:
+    pixi run jupyter lab notebooks/

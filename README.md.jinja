@@ -1,0 +1,68 @@
+# {{ project_name }}
+
+[![License](https://img.shields.io/github/license/{{ github_username }}/{{ project_name }})](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/{{ github_username }}/{{ project_name }}/ci.yml?label=CI)](https://github.com/{{ github_username }}/{{ project_name }}/actions)
+[![Python](https://img.shields.io/badge/python->%3D{{ python_version }}-blue)](https://python.org)
+
+{{ description }}
+
+## Installation
+
+This project uses [pixi](https://pixi.sh) for environment management.
+
+```bash
+git clone https://github.com/{{ github_username }}/{{ project_name }}.git
+cd {{ project_name }}
+just setup
+```
+
+## Quick start
+
+```python
+from {{ package_name }} import analysis
+```
+
+## Project structure
+
+```
+├── data/                        # Raw, processed, and external data (not tracked)
+├── notebooks/                   # Exploratory Jupyter notebooks
+├── results/                     # Figures, tables, and reports
+├── src/{{ package_name }}/      # Importable Python package
+│   ├── analysis/
+│   ├── data/
+│   ├── visualization/
+│   └── utils/
+├── tests/                       # Test suite
+├── config/                      # Configuration files
+├── pixi.toml                    # Dependency manifest
+├── pyproject.toml               # Build, lint, type-check, and test config
+└── justfile                     # Task runner
+```
+
+## Development
+
+```bash
+just test        # Run the test suite
+just lint        # Lint with ruff
+just format      # Format with ruff
+just typecheck   # Run mypy
+just check       # All of the above
+just notebook    # Start Jupyter Lab
+just clean       # Remove caches and build artifacts
+```
+
+## Data
+
+Raw data lives in `data/raw/` and is never modified directly.
+See `data/README.md` for instructions on obtaining the data.
+
+## Citation
+
+If you use this software in your research, please cite it:
+
+> See [CITATION.cff](CITATION.cff) for full citation metadata.
+
+## License
+
+This project is licensed under the {{ license }} License.
